@@ -1,7 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_app/config/config_cubit.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/providers/provider_list.dart';
 import 'package:todo_app/utils/app_colors.dart';
 
 class DropDownLanguage extends StatefulWidget {
@@ -12,20 +12,21 @@ class DropDownLanguage extends StatefulWidget {
 }
 
 class _DropDownLanguageState extends State<DropDownLanguage> {
-   
   String? selectedValue;
-  ConfigCubit viewModel = ConfigCubit();
+  late ConfigProvider configProvider;
   @override
   Widget build(BuildContext context) {
+    configProvider = Provider.of<ConfigProvider>(context);
     List<String> items = [
-    'English',
-    'العربية',
-  ];
-    return BlocBuilder<ConfigCubit, ConfigState>(
-      builder: (context, state) {
+      'English',
+      'العربية',
+    ];
+    return Consumer<ConfigProvider>(
+      // Use Consumer instead of BlocBuilder
+      builder: (context, configProvider, child) {
         String selectedValue =
-            ConfigCubit.language == 'en' ? 'English' : 'العربية';
-        
+            configProvider.language == 'en' ? 'English' : 'العربية';
+
         return Scaffold(
           body: DropdownButtonHideUnderline(
             child: DropdownButton2<String>(
@@ -51,13 +52,13 @@ class _DropDownLanguageState extends State<DropDownLanguage> {
               value: selectedValue,
               onChanged: (String? value) {
                 if (value != null) {
-                  ConfigCubit cubit = context.read<ConfigCubit>();
+                  ConfigProvider cubit = context.read<ConfigProvider>();
                   cubit.changeLanguage(value == 'English' ? 'en' : 'ar');
                 }
               },
               buttonStyleData: ButtonStyleData(
                 decoration: BoxDecoration(
-                    color: ConfigCubit.isDark()
+                    color: configProvider.isDark()
                         ? AppColors.darkGray
                         : AppColors.white,
                     border: Border.all(color: AppColors.blue)),

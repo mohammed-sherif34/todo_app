@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:todo_app/config/config_cubit.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/models/task.dart';
+import 'package:todo_app/providers/provider_list.dart';
 import 'package:todo_app/tabs/tasks/edite_task_page.dart';
 
 import '../../utils/app_colors.dart';
 
-class TaskItem extends StatelessWidget {
+class TaskItem extends StatefulWidget {
   const TaskItem({
     super.key,
+    required this.task,
   });
+  final Task task;
+
+  @override
+  State<TaskItem> createState() => _TaskItemState();
+}
+
+class _TaskItemState extends State<TaskItem> {
+  late ConfigProvider configProvider;
 
   @override
   Widget build(BuildContext context) {
+    configProvider = Provider.of<ConfigProvider>(context);
     return InkWell(
       onTap: () {
         Navigator.pushNamed(context, EditeTaskPage.name);
@@ -46,7 +58,7 @@ class TaskItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(
                   20,
                 ),
-                color: ConfigCubit.isDark()
+                color: configProvider.isDark()
                     ? AppColors.darkGray
                     : AppColors.white),
             child: Row(
@@ -63,13 +75,13 @@ class TaskItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Playbasketball',
+                      widget.task.title,
                       textAlign: TextAlign.start,
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * .6,
                       child: Text(
-                        'Playbasketball Playbasketball Playbasketball Playbasketball Playbasketball Playbasketball  Playbasketball',
+                        widget.task.description,
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.clip,
@@ -97,7 +109,8 @@ class TaskItem extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0, right: 16),
-                      child: const Text('10.30 AM', textAlign: TextAlign.end),
+                      child: Text(widget.task.time.hour.toString(),
+                          textAlign: TextAlign.end),
                     )
                   ],
                 )

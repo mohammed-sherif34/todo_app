@@ -1,7 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_app/config/config_cubit.dart';
+import 'package:provider/provider.dart'; // Add provider import
+import 'package:todo_app/providers/provider_list.dart';
 import 'package:todo_app/utils/app_colors.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -17,17 +17,18 @@ class _DropDownThemeState extends State<DropDownTheme> {
   String? selectedValue;
   late String light;
   late String dark;
-  ConfigCubit viewModel = ConfigCubit();
+
   @override
   Widget build(BuildContext context) {
     light = AppLocalizations.of(context)!.light;
     dark = AppLocalizations.of(context)!.dark;
     items = [light, dark];
-    return BlocBuilder<ConfigCubit, ConfigState>(
-      builder: (context, state) {
+
+    return Consumer<ConfigProvider>( // Use Consumer instead of BlocBuilder
+      builder: (context, configProvider, _) {
         String selectedValue =
-            ConfigCubit.themeMode == ThemeMode.light ? light : dark;
-        //if (ConfigCubit.language == 'en') {}
+            configProvider.themeMode == ThemeMode.light ? light : dark;
+
         return Scaffold(
           body: DropdownButtonHideUnderline(
             child: DropdownButton2<String>(
@@ -53,14 +54,15 @@ class _DropDownThemeState extends State<DropDownTheme> {
               value: selectedValue,
               onChanged: (String? value) {
                 if (value != null) {
-                  ConfigCubit cubit = context.read<ConfigCubit>();
-                  cubit.changeTheme(
-                      value == light ? ThemeMode.light : ThemeMode.dark);
+                  // Update the theme in ConfigProvider
+                  configProvider.changeTheme(
+                    value == light ? ThemeMode.light : ThemeMode.dark,
+                  );
                 }
               },
               buttonStyleData: ButtonStyleData(
                 decoration: BoxDecoration(
-                    color: ConfigCubit.isDark()
+                    color: configProvider.isDark()
                         ? AppColors.darkGray
                         : AppColors.white,
                     border: Border.all(color: AppColors.blue)),

@@ -1,7 +1,7 @@
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_app/config/config_cubit.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/providers/provider_list.dart';
 import 'package:todo_app/utils/app_colors.dart';
 
 class DateTimeLine extends StatefulWidget {
@@ -12,13 +12,14 @@ class DateTimeLine extends StatefulWidget {
 }
 
 class _DateTimeLineState extends State<DateTimeLine> {
+  late ConfigProvider configProvider;
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ConfigCubit, ConfigState>(
-      builder: (context, state) {
+    configProvider = Provider.of<ConfigProvider>(context);
+    
         return EasyDateTimeLine(
-          disabledDates: getDisabledDatesBeforeToday(),
-          locale: ConfigCubit.language,
+          disabledDates: ConfigProvider.getDisabledDatesBeforeToday(),
+          locale: configProvider.language,
           initialDate: DateTime.now(),
           //disabledDates: [DateTime(2024)],
           onDateChange: (selectedDate) {
@@ -27,27 +28,35 @@ class _DateTimeLineState extends State<DateTimeLine> {
           headerProps: EasyHeaderProps(
             //showHeader: false,
             selectedDateStyle: TextStyle(
-                color: ConfigCubit.isDark()
+                color: configProvider.isDark()
                     ? AppColors.primaryDark
                     : AppColors.white),
-            monthStyle: TextStyle(color: AppColors.white),
+            monthStyle: const TextStyle(color: AppColors.white),
             showMonthPicker: true,
             monthPickerType: MonthPickerType.switcher,
-            dateFormatter: DateFormatter.monthOnly(),
+            dateFormatter: const DateFormatter.monthOnly(),
           ),
           dayProps: EasyDayProps(
             todayStyle: DayStyle(
                 //borderRadius: 20,
                 decoration: BoxDecoration(
                     border: Border.all(width: 3, color: AppColors.gray),
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: ConfigCubit.isDark()
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(
+                        8,
+                      ),
+                    ),
+                    color: configProvider.isDark()
                         ? AppColors.black
                         : AppColors.white)),
             inactiveDayStyle: DayStyle(
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: ConfigCubit.isDark()
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(
+                        8,
+                      ),
+                    ),
+                    color: configProvider.isDark()
                         ? AppColors.black
                         : AppColors.white)),
             dayStructure: DayStructure.dayNumDayStr,
@@ -66,7 +75,7 @@ class _DateTimeLineState extends State<DateTimeLine> {
                   end: Alignment.bottomCenter,
                   colors: [
                     AppColors.blue,
-                    ConfigCubit.isDark()
+                    configProvider.isDark()
                         ? AppColors.black
                         : AppColors.primaryLight,
                   ],
@@ -75,27 +84,6 @@ class _DateTimeLineState extends State<DateTimeLine> {
             ),
           ),
         );
-      },
-    );
-  }
-
-  List<DateTime> getDisabledDatesBeforeToday() {
-    DateTime today = DateTime.now();
-
-    // We will assume you want to disable all dates starting from a given year (e.g., from year 2000).
-    DateTime startDate =
-        DateTime(2000, 1, 1); // Example start date: January 1, 2000
-
-    // Create a list to hold all the disabled dates
-    List<DateTime> disabledDates = [];
-
-    // Iterate from the day before today backwards to the start date
-    for (DateTime date = today.subtract(Duration(days: 1));
-        date.isAfter(startDate) || date.isAtSameMomentAs(startDate);
-        date = date.subtract(Duration(days: 1))) {
-      disabledDates.add(date);
-    }
-
-    return disabledDates;
+     
   }
 }

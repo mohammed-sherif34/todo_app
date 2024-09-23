@@ -1,20 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:todo_app/home_page/widgets/custom_bottom_sheet.dart';
-
+import 'package:provider/provider.dart';
+import 'package:todo_app/providers/provider_list.dart';
 import '../../utils/app_colors.dart';
 
-class EditeTaskPage extends StatelessWidget {
+class EditeTaskPage extends StatefulWidget {
   const EditeTaskPage({super.key});
   static const String name = 'EditeTaskPage';
+
+  @override
+  State<EditeTaskPage> createState() => _EditeTaskPageState();
+}
+
+class _EditeTaskPageState extends State<EditeTaskPage> {
+  late ConfigProvider configProvider;
+  //final GlobalKey key = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  var selectDate = DateTime.now();
   @override
   Widget build(BuildContext context) {
+    configProvider = Provider.of<ConfigProvider>(context);
     return Scaffold(
-      backgroundColor: AppColors.primaryLight,
+      backgroundColor: configProvider.isDark()
+          ? AppColors.primaryDark
+          : AppColors.primaryLight,
       appBar: AppBar(
         toolbarHeight: MediaQuery.of(context).size.height * .15,
-        iconTheme: const IconThemeData(
-          color: AppColors.white, //change your color here
+        iconTheme: IconThemeData(
+          color: configProvider.isDark()
+              ? AppColors.primaryDark
+              : AppColors.white, //change your color here
         ),
         backgroundColor: AppColors.blue,
         title: Padding(
@@ -28,105 +43,130 @@ class EditeTaskPage extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              alignment: AlignmentDirectional.topCenter,
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * .06,
-                  color: AppColors.blue,
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * .9,
-                  height: MediaQuery.of(context).size.height * .6,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color.fromARGB(241, 255, 255, 255),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              Stack(
+                alignment: AlignmentDirectional.topCenter,
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height * .06,
+                    color: AppColors.blue,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          textAlign: TextAlign.center,
-                          'Edite Task',
-                          style: GoogleFonts.poppins(
-                            textStyle: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        TextField(
-                          decoration: InputDecoration(
-                              hintStyle: GoogleFonts.inter(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(color: Color(0xffA9A9A9)),
-                              ),
-                              hintText: 'enter your task title'),
-                        ),
-                        TextField(
-                          maxLines: 4,
-                          decoration: InputDecoration(
-                              hintStyle: GoogleFonts.inter(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(color: Color(0xffA9A9A9)),
-                              ),
-                              hintText: 'enter your task description'),
-                        ),
-                        InkWell(
-                          onTap: () {},
-                          child: Text(
-                            'Select time',
-                            textAlign: TextAlign.start,
-                            style: GoogleFonts.inter(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(
-                                        //color: Color(0xffA9A9A9),
-                                        )),
-                          ),
-                        ),
-                        Text(
-                          textAlign: TextAlign.center,
-                          '27-6-2021',
-                          style: GoogleFonts.inter(
-                            textStyle: Theme.of(context)
-                                .textTheme
-                                .titleSmall!
-                                .copyWith(color: Color(0xffA9A9A9)),
-                          ),
-                        ),
-                        //Spacer(),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.blue),
-                          onPressed: () {},
-                          child: Text(
-                            'addTask',
+                  Container(
+                    width: MediaQuery.of(context).size.width * .9,
+                    height: MediaQuery.of(context).size.height * .6,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: configProvider.isDark()
+                          ? AppColors.darkGray
+                          : const Color.fromARGB(241, 255, 255, 255),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            textAlign: TextAlign.center,
+                            'Edite Task',
                             style: GoogleFonts.poppins(
                               textStyle: Theme.of(context)
                                   .textTheme
                                   .titleMedium!
-                                  .copyWith(color: AppColors.white),
+                                  .copyWith(
+                                      color: configProvider.isDark()
+                                          ? AppColors.gray
+                                          : AppColors.black,
+                                      fontWeight: FontWeight.bold),
                             ),
                           ),
-                        ),
-                      ],
+                          TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'title can not be empty';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                                hintStyle: GoogleFonts.inter(
+                                  textStyle: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall!
+                                      .copyWith(color: const Color(0xffA9A9A9)),
+                                ),
+                                hintText: 'enter your task title'),
+                          ),
+                          TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'description can not be empty';
+                              }
+                              return null;
+                            },
+                            maxLines: 4,
+                            decoration: InputDecoration(
+                                hintStyle: GoogleFonts.inter(
+                                  textStyle: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall!
+                                      .copyWith(color: const Color(0xffA9A9A9)),
+                                ),
+                                hintText: 'enter your task description'),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              configProvider.showCalender(context);
+                            },
+                            child: Text(
+                              'Select time',
+                              textAlign: TextAlign.start,
+                              style: GoogleFonts.inter(
+                                  textStyle: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall!
+                                      .copyWith(color: AppColors.gray
+                                          //color: Color(0xffA9A9A9),
+                                          )),
+                            ),
+                          ),
+                          Text(
+                            textAlign: TextAlign.center,
+                            configProvider.formateDate(),
+                            style: GoogleFonts.inter(
+                              textStyle: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(color: const Color(0xffA9A9A9)),
+                            ),
+                          ),
+                          //Spacer(),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.blue),
+                            onPressed: () {
+                              _formKey.currentState?.validate();
+                            },
+                            child: Text(
+                              'addTask',
+                              style: GoogleFonts.poppins(
+                                textStyle: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(color: AppColors.white),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
