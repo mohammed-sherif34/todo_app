@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 //import 'package:todo_app/tabs/settings/drop_down_language.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/providers/provider_list.dart';
-import 'package:todo_app/tabs/settings/drop_down_theme.dart';
+import 'package:todo_app/providers/config_provider.dart';
+import 'package:todo_app/home_page/tabs/settings/drop_down_theme.dart';
 import 'package:todo_app/utils/app_colors.dart';
 
 class SettingsTab extends StatefulWidget {

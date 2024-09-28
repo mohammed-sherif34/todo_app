@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/providers/provider_list.dart';
-import 'package:todo_app/tabs/settings/settings_tab.dart';
-import 'package:todo_app/tabs/tasks/tasks_tab.dart';
+import 'package:todo_app/providers/config_provider.dart';
+import 'package:todo_app/home_page/tabs/settings/settings_tab.dart';
+import 'package:todo_app/home_page/tabs/tasks/tasks_tab.dart';
 import 'package:todo_app/utils/app_colors.dart';
 import 'widgets/custom_floating_action_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

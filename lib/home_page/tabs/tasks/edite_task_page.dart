@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/providers/provider_list.dart';
-import '../../utils/app_colors.dart';
+import 'package:todo_app/models/task.dart';
+import 'package:todo_app/providers/config_provider.dart';
+import 'package:todo_app/utils/firebase_utils.dart';
+import '../../../utils/app_colors.dart';
 
 class EditeTaskPage extends StatefulWidget {
   const EditeTaskPage({super.key});
@@ -14,9 +16,22 @@ class EditeTaskPage extends StatefulWidget {
 
 class _EditeTaskPageState extends State<EditeTaskPage> {
   late ConfigProvider configProvider;
-  //final GlobalKey key = GlobalKey<FormState>();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  var selectDate = DateTime.now();
+  late Task task;
+  TextEditingController editingTilteController = TextEditingController();
+  TextEditingController editingDescController = TextEditingController();
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((duration) {
+      task = ModalRoute.of(context)!.settings.arguments as Task;
+      configProvider.selectDate = task.date;
+      configProvider.selectedTime = task.time;
+      editingDescController.text = task.description;
+      editingTilteController.text = task.title;
+      setState(() {});
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     configProvider = Provider.of<ConfigProvider>(context);
@@ -44,7 +59,7 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
       ),
       body: SingleChildScrollView(
         child: Form(
-          key: _formKey,
+          key: configProvider.editeFormKey,
           child: Column(
             children: [
               Stack(
@@ -84,6 +99,11 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
                             ),
                           ),
                           TextFormField(
+                            style: TextStyle(
+                                color: configProvider.isDark()
+                                    ? AppColors.gray
+                                    : AppColors.black),
+                            controller: editingTilteController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'title can not be empty';
@@ -91,15 +111,21 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
                               return null;
                             },
                             decoration: InputDecoration(
-                                hintStyle: GoogleFonts.inter(
-                                  textStyle: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall!
-                                      .copyWith(color: const Color(0xffA9A9A9)),
-                                ),
-                                hintText: 'enter your task title'),
+                              hintStyle: GoogleFonts.inter(
+                                textStyle: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(color: const Color(0xffA9A9A9)),
+                              ),
+                              //hintText: 'enter your task title'
+                            ),
                           ),
                           TextFormField(
+                             style: TextStyle(
+                                color: configProvider.isDark()
+                                    ? AppColors.gray
+                                    : AppColors.black),
+                            controller: editingDescController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'description can not be empty';
@@ -108,49 +134,81 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
                             },
                             maxLines: 4,
                             decoration: InputDecoration(
-                                hintStyle: GoogleFonts.inter(
+                              hintStyle: GoogleFonts.inter(
+                                textStyle: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(color: const Color(0xffA9A9A9)),
+                              ),
+                              //label: Text('desc')
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              configProvider.showCalender(context);
+                              configProvider.selectTime(context);
+                            },
+                            child: Text(
+                              'Select time and date',
+                              textAlign: TextAlign.start,
+                              style: GoogleFonts.inter(
+                                textStyle: Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(color: AppColors.gray
+                                        //color: Color(0xffA9A9A9),
+                                        ),
+                              ),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text(
+                                textAlign: TextAlign.center,
+                                configProvider.formateDate(
+                                    date: configProvider.selectDate),
+                                style: GoogleFonts.inter(
                                   textStyle: Theme.of(context)
                                       .textTheme
                                       .titleSmall!
                                       .copyWith(color: const Color(0xffA9A9A9)),
                                 ),
-                                hintText: 'enter your task description'),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              configProvider.showCalender(context);
-                            },
-                            child: Text(
-                              'Select time',
-                              textAlign: TextAlign.start,
-                              style: GoogleFonts.inter(
+                              ),
+                              Text(
+                                textAlign: TextAlign.center,
+                                configProvider.selectedTime,
+                                style: GoogleFonts.inter(
                                   textStyle: Theme.of(context)
                                       .textTheme
                                       .titleSmall!
-                                      .copyWith(color: AppColors.gray
-                                          //color: Color(0xffA9A9A9),
-                                          )),
-                            ),
-                          ),
-                          Text(
-                            textAlign: TextAlign.center,
-                            configProvider.formateDate(),
-                            style: GoogleFonts.inter(
-                              textStyle: Theme.of(context)
-                                  .textTheme
-                                  .titleSmall!
-                                  .copyWith(color: const Color(0xffA9A9A9)),
-                            ),
+                                      .copyWith(color: const Color(0xffA9A9A9)),
+                                ),
+                              ),
+                            ],
                           ),
                           //Spacer(),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.blue),
                             onPressed: () {
-                              _formKey.currentState?.validate();
+                              configProvider.editeFormKey.currentState
+                                  ?.validate();
+                              FireBaseUtils.updateTask(
+                                  task: task,
+                                  updatedData: Task(
+                                          time: task.time,
+                                          id: task.id,
+                                          title: editingTilteController.text,
+                                          description:
+                                              editingDescController.text,
+                                          date: configProvider.selectDate)
+                                      .toJson());
+                              configProvider.gettasksList();
+                              Navigator.pop(context);
                             },
                             child: Text(
-                              'addTask',
+                              'Save Changes',
                               style: GoogleFonts.poppins(
                                 textStyle: Theme.of(context)
                                     .textTheme

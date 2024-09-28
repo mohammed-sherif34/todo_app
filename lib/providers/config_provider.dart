@@ -7,20 +7,68 @@ import 'package:todo_app/utils/firebase_utils.dart';
 class ConfigProvider extends ChangeNotifier {
   String language = 'en';
   ThemeMode themeMode = ThemeMode.light;
-  List<Task> tasksList = [];
+
   DateTime selectDate = DateTime.now();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController titleController = TextEditingController();
   TextEditingController descrController = TextEditingController();
+  final GlobalKey<FormState> editeFormKey = GlobalKey<FormState>();
+  TextEditingController editeTitleController = TextEditingController();
+  TextEditingController editeDescrController = TextEditingController();
+  DateTime timeLineSelectedDate =
+      DateTime.now(); // Initially set to today's date
+  List<Task> tasksList = [];
+  void setTaskValues() {
+    editeTitleController.text = titleController.text;
+    editeDescrController.text = descrController.text;
+  }
+
+  // Method to change the selected date and immediately update the task list
+  void changeSelectDate(DateTime date) {
+    timeLineSelectedDate = date; // Update the selected date
+    gettasksList(); // Fetch tasks based on the new date
+    notifyListeners(); // Notify listeners to update UI
+  }
 
   void gettasksList() async {
-    QuerySnapshot<Task> querySnapshot =
-        await FireBaseUtils.collectionRef().get();
+    // Get start and end of the selected day (full day range)
+    DateTime startOfDay = DateTime(
+      timeLineSelectedDate.year,
+      timeLineSelectedDate.month,
+      timeLineSelectedDate.day,
+      0,
+      0,
+      0,
+    );
+
+    DateTime endOfDay = DateTime(
+      timeLineSelectedDate.year,
+      timeLineSelectedDate.month,
+      timeLineSelectedDate.day,
+      23,
+      59,
+      59,
+    );
+
+    // Convert DateTime to Firebase Timestamps for querying
+    Timestamp startTimestamp = Timestamp.fromDate(startOfDay);
+    Timestamp endTimestamp = Timestamp.fromDate(endOfDay);
+
+    // Query Firestore for tasks between startOfDay and endOfDay
+    QuerySnapshot<Task> querySnapshot = await FireBaseUtils.collectionRef()
+        .where('date', isGreaterThanOrEqualTo: startTimestamp)
+        .where('date', isLessThanOrEqualTo: endTimestamp)
+        .orderBy(
+          'date',
+        )
+        .get();
+
     tasksList = querySnapshot.docs
         .map(
           (doc) => doc.data(),
         )
         .toList();
+
     notifyListeners();
   }
 
@@ -28,9 +76,10 @@ class ConfigProvider extends ChangeNotifier {
     formKey.currentState?.validate();
 
     Task task = Task(
+        time: selectedTime,
         title: titleController.text,
         description: descrController.text,
-        time: selectDate);
+        date: selectDate);
     FireBaseUtils.addTask(task)
         .timeout(const Duration(seconds: 1), onTimeout: () {});
     gettasksList();
@@ -39,8 +88,8 @@ class ConfigProvider extends ChangeNotifier {
     descrController.clear();
   }
 
-  String formateDate() {
-    return formatDate(selectDate, [dd, '-', mm, '-', yyyy]);
+  String formateDate({required DateTime date}) {
+    return formatDate(date, [dd, '-', mm, '-', yyyy]);
   }
 
   void showCalender(context) async {
@@ -53,7 +102,20 @@ class ConfigProvider extends ChangeNotifier {
     );
 
     selectDate = chosenDate ?? selectDate;
+    //formateDate(date: selectDate);
     notifyListeners();
+  }
+
+  String selectedTime = "${DateTime.now().hour}:${DateTime.now().minute}";
+  Future<void> selectTime(BuildContext context) async {
+    TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      selectedTime = '${picked.hour}:${picked.minute}';
+      notifyListeners();
+    }
   }
 
   void changeLanguage(String newLanguage) {

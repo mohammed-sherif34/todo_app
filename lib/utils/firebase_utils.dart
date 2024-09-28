@@ -16,4 +16,19 @@ class FireBaseUtils {
     task.id = taskDocRef.id;
     return taskDocRef.set(task);
   }
+
+  static void deleteTask(Task task) {
+    collectionRef().doc(task.id).delete();
+  }
+
+  static Future<void> updateTask(
+      {required Task task,
+      required Map<String, dynamic> updatedData}) {
+    CollectionReference tasks = collectionRef();
+    return tasks
+        .doc(task.id)
+        .update(updatedData)
+        .then((value) => print("task Updated"))
+        .catchError((error) => print("Failed to update task: $error"));
+  }
 }

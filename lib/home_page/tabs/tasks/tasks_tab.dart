@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/home_page/widgets/date_time_line.dart';
-import 'package:todo_app/providers/provider_list.dart';
+import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/utils/app_colors.dart';
 
-import '../../home_page/widgets/task_item.dart';
+import '../../widgets/task_item.dart';
 
 class TasksTab extends StatelessWidget {
   const TasksTab({super.key});

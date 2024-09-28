@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/providers/provider_list.dart';
+import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/utils/app_colors.dart';
 
 class CustomBottomSheet extends StatefulWidget {
@@ -51,6 +51,10 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                   ),
                 ),
                 TextFormField(
+                   style: TextStyle(
+                      color: configProvider.isDark()
+                          ? AppColors.gray
+                          : AppColors.black),
                   controller: configProvider.titleController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -68,6 +72,10 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                       hintText: 'enter your task title'),
                 ),
                 TextFormField(
+                   style: TextStyle(
+                      color: configProvider.isDark()
+                          ? AppColors.gray
+                          : AppColors.black),
                   controller: configProvider.descrController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -89,9 +97,10 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                 InkWell(
                   onTap: () {
                     configProvider.showCalender(context);
+                    configProvider.selectTime(context);
                   },
                   child: Text(
-                    'Select time',
+                    'Select date and time',
                     textAlign: TextAlign.start,
                     style: GoogleFonts.inter(
                         textStyle: configProvider.isDark()
@@ -102,15 +111,31 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                             : Theme.of(context).textTheme.titleSmall),
                   ),
                 ),
-                Text(
-                  textAlign: TextAlign.center,
-                  configProvider.formateDate(),
-                  style: GoogleFonts.inter(
-                    textStyle: Theme.of(context)
-                        .textTheme
-                        .titleSmall!
-                        .copyWith(color: const Color(0xffA9A9A9)),
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      textAlign: TextAlign.center,
+                      configProvider.formateDate(
+                          date: configProvider.selectDate),
+                      style: GoogleFonts.inter(
+                        textStyle: Theme.of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(color: const Color(0xffA9A9A9)),
+                      ),
+                    ),
+                    Text(
+                      textAlign: TextAlign.center,
+                      configProvider.selectedTime,
+                      style: GoogleFonts.inter(
+                        textStyle: Theme.of(context)
+                            .textTheme
+                            .titleSmall!
+                            .copyWith(color: const Color(0xffA9A9A9)),
+                      ),
+                    ),
+                  ],
                 ),
                 //Spacer(),
                 ElevatedButton(

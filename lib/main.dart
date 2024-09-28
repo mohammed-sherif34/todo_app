@@ -2,8 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/providers/provider_list.dart';
-import 'package:todo_app/tabs/tasks/edite_task_page.dart';
+import 'package:todo_app/providers/config_provider.dart';
+import 'package:todo_app/home_page/tabs/tasks/edite_task_page.dart';
 import 'package:todo_app/utils/my_theme_data.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'home_page/home_page.dart';
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
           darkTheme: MyThemeData.darkTheme,
           debugShowCheckedModeBanner: false,
           routes: {
-            EditeTaskPage.name: (context) => const EditeTaskPage(),
+            EditeTaskPage.name: (context) =>  EditeTaskPage(),
             HomePage.name: (context) => HomePage(),
           },
           initialRoute: HomePage.name,

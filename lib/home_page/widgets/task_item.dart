@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/models/task.dart';
-import 'package:todo_app/providers/provider_list.dart';
-import 'package:todo_app/tabs/tasks/edite_task_page.dart';
+import 'package:todo_app/providers/config_provider.dart';
+import 'package:todo_app/home_page/tabs/tasks/edite_task_page.dart';
+import 'package:todo_app/utils/firebase_utils.dart';
 
 import '../../utils/app_colors.dart';
 
@@ -26,26 +27,22 @@ class _TaskItemState extends State<TaskItem> {
     configProvider = Provider.of<ConfigProvider>(context);
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context, EditeTaskPage.name);
+        Navigator.pushNamed(context, EditeTaskPage.name,
+            arguments: widget.task);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 25),
         child: Slidable(
-          // The start action pane is the one at the left or the top side.
           startActionPane: ActionPane(
             extentRatio: .25,
-            // A motion is a widget used to control how the pane animates.
             motion: const ScrollMotion(),
-
-            // A pane can dismiss the Slidable.
-            //dismissible: DismissiblePane(onDismissed: () {}),
-
-            // All actions are defined in the children parameter.
             children: [
-              // A SlidableAction can have an icon and/or a label.
               SlidableAction(
                 borderRadius: BorderRadius.circular(20),
-                onPressed: (context) {},
+                onPressed: (context) {
+                  FireBaseUtils.deleteTask(widget.task);
+                  configProvider.gettasksList();
+                },
                 backgroundColor: const Color(0xFFFE4A49),
                 foregroundColor: Colors.white,
                 icon: Icons.delete,
@@ -67,7 +64,7 @@ class _TaskItemState extends State<TaskItem> {
                 Container(
                   margin: const EdgeInsets.only(
                       top: 24, bottom: 24, left: 16, right: 24),
-                  color: AppColors.blue,
+                  color: widget.task.isDone ? AppColors.green : AppColors.blue,
                   width: 5,
                   height: MediaQuery.of(context).size.height * .08,
                 ),
@@ -96,10 +93,26 @@ class _TaskItemState extends State<TaskItem> {
                       padding: const EdgeInsets.only(right: 16.0),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.blue,
+                          backgroundColor: widget.task.isDone
+                              ? AppColors.green
+                              : AppColors.blue,
                         ),
-                        onPressed: () {},
-                        child: Icon(
+                        onPressed: () {
+                          if (!widget.task.isDone) {
+                            FireBaseUtils.updateTask(
+                                task: widget.task,
+                                updatedData: Task(
+                                  time: widget.task.time,
+                                        id: widget.task.id,
+                                        title: widget.task.title,
+                                        description: widget.task.description,
+                                        date: widget.task.date,
+                                        isDone: true)
+                                    .toJson());
+                          }
+                          configProvider.gettasksList();
+                        },
+                        child: const Icon(
                           // opticalSize: 50,
                           Icons.check_outlined,
                           color: AppColors.white,
@@ -109,7 +122,7 @@ class _TaskItemState extends State<TaskItem> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0, right: 16),
-                      child: Text(widget.task.time.hour.toString(),
+                      child: Text(widget.task.time,
                           textAlign: TextAlign.end),
                     )
                   ],
