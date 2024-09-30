@@ -59,7 +59,6 @@ class _TaskItemState extends State<TaskItem> {
                     ? AppColors.darkGray
                     : AppColors.white),
             child: Row(
-              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   margin: const EdgeInsets.only(
@@ -74,14 +73,28 @@ class _TaskItemState extends State<TaskItem> {
                     Text(
                       widget.task.title,
                       textAlign: TextAlign.start,
+                      style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                            color: widget.task.isDone
+                                ? AppColors.green
+                                : AppColors.blue,
+                          ),
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * .6,
-                      child: Text(
-                        widget.task.description,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.clip,
+                      child: Padding(
+                        padding: const EdgeInsetsDirectional.only(start: 8.0),
+                        child: Text(
+                          widget.task.description,
+                          style:
+                              Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    color: widget.task.isDone
+                                        ? AppColors.green
+                                        : AppColors.blue,
+                                  ),
+                          textAlign: TextAlign.start,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
                   ],
@@ -102,7 +115,7 @@ class _TaskItemState extends State<TaskItem> {
                             FireBaseUtils.updateTask(
                                 task: widget.task,
                                 updatedData: Task(
-                                  time: widget.task.time,
+                                        time: widget.task.time,
                                         id: widget.task.id,
                                         title: widget.task.title,
                                         description: widget.task.description,
@@ -113,7 +126,6 @@ class _TaskItemState extends State<TaskItem> {
                           configProvider.gettasksList();
                         },
                         child: const Icon(
-                          // opticalSize: 50,
                           Icons.check_outlined,
                           color: AppColors.white,
                           size: 30,
@@ -123,6 +135,7 @@ class _TaskItemState extends State<TaskItem> {
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0, right: 16),
                       child: Text(widget.task.time,
+                          style: Theme.of(context).textTheme.bodySmall,
                           textAlign: TextAlign.end),
                     )
                   ],

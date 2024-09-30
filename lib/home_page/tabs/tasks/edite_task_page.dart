@@ -143,23 +143,46 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
                               //label: Text('desc')
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
-                              configProvider.showCalender(context);
-                              configProvider.selectTime(context);
-                            },
-                            child: Text(
-                              'Select time and date',
-                              textAlign: TextAlign.start,
-                              style: GoogleFonts.inter(
-                                textStyle: Theme.of(context)
-                                    .textTheme
-                                    .titleSmall!
-                                    .copyWith(color: AppColors.gray
-                                        //color: Color(0xffA9A9A9),
-                                        ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  configProvider.showCalender(context);
+                                },
+                                child: Text(
+                                  'Select date ',
+                                  textAlign: TextAlign.start,
+                                  style: GoogleFonts.inter(
+                                      textStyle: configProvider.isDark()
+                                          ? Theme.of(context)
+                                              .textTheme
+                                              .titleSmall!
+                                              .copyWith(color: AppColors.gray)
+                                          : Theme.of(context)
+                                              .textTheme
+                                              .titleSmall),
+                                ),
                               ),
-                            ),
+                              InkWell(
+                                onTap: () {
+                                  configProvider.selectTime(context);
+                                },
+                                child: Text(
+                                  'Select time',
+                                  textAlign: TextAlign.start,
+                                  style: GoogleFonts.inter(
+                                      textStyle: configProvider.isDark()
+                                          ? Theme.of(context)
+                                              .textTheme
+                                              .titleSmall!
+                                              .copyWith(color: AppColors.gray)
+                                          : Theme.of(context)
+                                              .textTheme
+                                              .titleSmall),
+                                ),
+                              ),
+                            ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

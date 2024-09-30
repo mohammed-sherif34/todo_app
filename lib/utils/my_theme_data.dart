@@ -5,7 +5,9 @@ class MyThemeData {
   static ThemeData lightTheme = ThemeData(
     primaryColor: AppColors.primaryLight,
     scaffoldBackgroundColor: AppColors.primaryLight,
+    canvasColor: AppColors.primaryLight,
     textTheme: TextTheme(
+      
       titleLarge: TextStyle(
         fontSize: 22,
         color: AppColors.white,
@@ -41,6 +43,7 @@ class MyThemeData {
   static ThemeData darkTheme = ThemeData(
     primaryColor: AppColors.primaryDark,
     scaffoldBackgroundColor: AppColors.primaryDark,
+    canvasColor: AppColors.primaryDark,
     textTheme: TextTheme(
       titleLarge: TextStyle(
         fontSize: 22,

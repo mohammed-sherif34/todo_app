@@ -16,18 +16,17 @@ class ConfigProvider extends ChangeNotifier {
   TextEditingController editeTitleController = TextEditingController();
   TextEditingController editeDescrController = TextEditingController();
   DateTime timeLineSelectedDate =
-      DateTime.now(); // Initially set to today's date
+      DateTime.now(); 
   List<Task> tasksList = [];
-  void setTaskValues() {
-    editeTitleController.text = titleController.text;
-    editeDescrController.text = descrController.text;
-  }
+  String selectedTime = TimeOfDay.now().hour < 12
+      ? '${TimeOfDay.now().hour}:${TimeOfDay.now().minute} am'
+      : '${TimeOfDay.now().hour - 11}:${TimeOfDay.now().minute} pm';
+ 
 
-  // Method to change the selected date and immediately update the task list
-  void changeSelectDate(DateTime date) {
-    timeLineSelectedDate = date; // Update the selected date
-    gettasksList(); // Fetch tasks based on the new date
-    notifyListeners(); // Notify listeners to update UI
+ void changeSelectDate(DateTime date) {
+    timeLineSelectedDate = date; 
+    gettasksList(); 
+    notifyListeners(); 
   }
 
   void gettasksList() async {
@@ -106,16 +105,22 @@ class ConfigProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String selectedTime = "${DateTime.now().hour}:${DateTime.now().minute}";
+  
   Future<void> selectTime(BuildContext context) async {
     TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
     );
     if (picked != null) {
-      selectedTime = '${picked.hour}:${picked.minute}';
+      formateTime(picked);
       notifyListeners();
     }
+  }
+
+  String formateTime(TimeOfDay picked) {
+    return picked.hour < 12
+        ? '${picked.hour}:${picked.minute} am'
+        : '${picked.hour - 11}:${picked.minute} pm';
   }
 
   void changeLanguage(String newLanguage) {

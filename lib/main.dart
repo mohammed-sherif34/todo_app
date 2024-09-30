@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/authentication/auth_page.dart';
 import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/home_page/tabs/tasks/edite_task_page.dart';
 import 'package:todo_app/utils/my_theme_data.dart';
@@ -13,20 +14,18 @@ void main() async {
   await Firebase.initializeApp();
   runApp(ChangeNotifierProvider(
     create: (context) => ConfigProvider(),
-    child: MyApp(),
+    child: const TodoApp(),
   ));
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
-  late ConfigProvider configProvider;
+class TodoApp extends StatelessWidget {
+  const TodoApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    configProvider = Provider.of<ConfigProvider>(context);
+    ConfigProvider configProvider = Provider.of<ConfigProvider>(context);
     return Consumer<ConfigProvider>(
       builder: (context, state, _) {
-        
-
         return MaterialApp(
           localizationsDelegates: const [
             AppLocalizations.delegate, // Add this line
@@ -44,10 +43,11 @@ class MyApp extends StatelessWidget {
           darkTheme: MyThemeData.darkTheme,
           debugShowCheckedModeBanner: false,
           routes: {
-            EditeTaskPage.name: (context) =>  EditeTaskPage(),
-            HomePage.name: (context) => HomePage(),
+            EditeTaskPage.name: (context) => const EditeTaskPage(),
+            HomePage.name: (context) => const HomePage(),
+            AuthPage.name: (context) => const AuthPage(),
           },
-          initialRoute: HomePage.name,
+          initialRoute: AuthPage.name,
         );
       },
     );

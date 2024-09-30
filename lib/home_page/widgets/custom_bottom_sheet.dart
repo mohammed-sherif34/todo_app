@@ -51,7 +51,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                   ),
                 ),
                 TextFormField(
-                   style: TextStyle(
+                  style: TextStyle(
                       color: configProvider.isDark()
                           ? AppColors.gray
                           : AppColors.black),
@@ -72,7 +72,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                       hintText: 'enter your task title'),
                 ),
                 TextFormField(
-                   style: TextStyle(
+                  style: TextStyle(
                       color: configProvider.isDark()
                           ? AppColors.gray
                           : AppColors.black),
@@ -94,22 +94,42 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                       //label: Text('description'),
                       hintText: 'enter your task description'),
                 ),
-                InkWell(
-                  onTap: () {
-                    configProvider.showCalender(context);
-                    configProvider.selectTime(context);
-                  },
-                  child: Text(
-                    'Select date and time',
-                    textAlign: TextAlign.start,
-                    style: GoogleFonts.inter(
-                        textStyle: configProvider.isDark()
-                            ? Theme.of(context)
-                                .textTheme
-                                .titleSmall!
-                                .copyWith(color: AppColors.gray)
-                            : Theme.of(context).textTheme.titleSmall),
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        configProvider.showCalender(context);
+                      },
+                      child: Text(
+                        'Select date ',
+                        textAlign: TextAlign.start,
+                        style: GoogleFonts.inter(
+                            textStyle: configProvider.isDark()
+                                ? Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(color: AppColors.gray)
+                                : Theme.of(context).textTheme.titleSmall),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        configProvider.selectTime(context);
+                      },
+                      child: Text(
+                        'Select time',
+                        textAlign: TextAlign.start,
+                        style: GoogleFonts.inter(
+                            textStyle: configProvider.isDark()
+                                ? Theme.of(context)
+                                    .textTheme
+                                    .titleSmall!
+                                    .copyWith(color: AppColors.gray)
+                                : Theme.of(context).textTheme.titleSmall),
+                      ),
+                    ),
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
