@@ -8,7 +8,7 @@ import 'package:todo_app/utils/app_colors.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
-  static const name = 'RegisterPage';
+  static const name = 'AuthPage';
   @override
   State<AuthPage> createState() => _AuthPageState();
 }
@@ -26,6 +26,7 @@ class _AuthPageState extends State<AuthPage> {
     configProvider = Provider.of<ConfigProvider>(context);
     return Scaffold(
       appBar: AppBar(
+        //elevation: 0,
         toolbarHeight: MediaQuery.of(context).size.height * .17,
         iconTheme: IconThemeData(
           color: configProvider.isDark()
@@ -48,9 +49,9 @@ class _AuthPageState extends State<AuthPage> {
               ? LoginForm(
                   onPressed: changeAuthForm,
                 )
-              :  RegisterForm(
-                 onPressed: changeAuthForm,
-              )),
+              : RegisterForm(
+                  onPressed: changeAuthForm,
+                )),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/authentication/widgets/custom_auth_text_filed.dart';
 import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/utils/app_colors.dart';
+import 'package:todo_app/utils/firebase_utils.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({
@@ -18,13 +19,17 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  TextEditingController userNameController = TextEditingController();
+  TextEditingController userNameController = TextEditingController(text: 'mo');
 
-  TextEditingController emailController = TextEditingController();
+  TextEditingController emailController =
+      TextEditingController(text: 'mohamed@gmail.com');
 
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController passwordController =
+      TextEditingController(text: '123456');
 
-  TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController(
+    text: '123456',
+  );
 
   late ConfigProvider configProvider;
 
@@ -108,7 +113,6 @@ class _RegisterFormState extends State<RegisterForm> {
                       return null;
                     },
                   ),
-
                   CustomAuthTextFiled(
                     labelText: 'Confirm Password',
                     controller: confirmPasswordController,
@@ -125,13 +129,14 @@ class _RegisterFormState extends State<RegisterForm> {
                       return null;
                     },
                   ),
-
-                  //Spacer(),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.blue),
                     onPressed: () {
-                      formKey.currentState!.validate();
+                      FireBaseUtils.register(
+                          formKey: formKey,
+                          emailController: emailController,
+                          passwordController: passwordController);
                     },
                     child: Text(
                       'Register',

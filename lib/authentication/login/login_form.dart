@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/authentication/widgets/custom_auth_text_filed.dart';
 import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/utils/app_colors.dart';
+import 'package:todo_app/utils/firebase_utils.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key, required this.onPressed});
@@ -16,9 +17,13 @@ class _LoginFormState extends State<LoginForm> {
   late ConfigProvider configProvider;
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  TextEditingController emailController = TextEditingController();
+  TextEditingController emailController = TextEditingController(
+    text: 'mohamed@gmail.com',
+  );
 
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController passwordController = TextEditingController(
+    text: '123456',
+  );
   @override
   Widget build(BuildContext context) {
     configProvider = Provider.of<ConfigProvider>(context);
@@ -109,7 +114,10 @@ class _LoginFormState extends State<LoginForm> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.blue),
                     onPressed: () {
-                      formKey.currentState!.validate();
+                      FireBaseUtils.login(
+                          formKey: formKey,
+                          emailController: emailController,
+                          passwordController: passwordController);
                     },
                     child: Text(
                       'Login',
