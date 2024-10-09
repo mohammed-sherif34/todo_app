@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/utils/app_colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomBottomSheet extends StatefulWidget {
   const CustomBottomSheet({
@@ -15,13 +16,15 @@ class CustomBottomSheet extends StatefulWidget {
 
 class _CustomBottomSheetState extends State<CustomBottomSheet> {
   late ConfigProvider configProvider;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descrController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     configProvider = Provider.of<ConfigProvider>(context);
     return BottomSheet(
       backgroundColor:
           configProvider.isDark() ? AppColors.primaryDark : AppColors.white,
-      //dragHandleSize: Size.square(200),
       onClosing: () {},
       builder: (context) {
         return Container(
@@ -31,14 +34,14 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
           ),
           height: MediaQuery.of(context).size.height * .55,
           child: Form(
-            key: configProvider.formKey,
+            key: formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
                   textAlign: TextAlign.center,
-                  'Add new Task',
+                  AppLocalizations.of(context)!.addNewTask,
                   style: GoogleFonts.poppins(
                     textStyle: Theme.of(context)
                         .textTheme
@@ -55,10 +58,10 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                       color: configProvider.isDark()
                           ? AppColors.gray
                           : AppColors.black),
-                  controller: configProvider.titleController,
+                  controller: titleController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'title can not be empty';
+                      return AppLocalizations.of(context)!.titleCanNotbeEmpty;
                     }
                     return null;
                   },
@@ -69,17 +72,17 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                             .titleSmall!
                             .copyWith(color: const Color(0xffA9A9A9)),
                       ),
-                      hintText: 'enter your task title'),
+                      hintText: AppLocalizations.of(context)!.enterYourTaskTitle),
                 ),
                 TextFormField(
                   style: TextStyle(
                       color: configProvider.isDark()
                           ? AppColors.gray
                           : AppColors.black),
-                  controller: configProvider.descrController,
+                  controller: descrController,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'description can not be empty';
+                      return AppLocalizations.of(context)!.descCanNotbeEmpty;
                     }
                     return null;
                   },
@@ -92,7 +95,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                             .copyWith(color: const Color(0xffA9A9A9)),
                       ),
                       //label: Text('description'),
-                      hintText: 'enter your task description'),
+                      hintText: AppLocalizations.of(context)!.enterYourTaskdesc),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -102,7 +105,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                         configProvider.showCalender(context);
                       },
                       child: Text(
-                        'Select date ',
+                        AppLocalizations.of(context)!.selectdate,
                         textAlign: TextAlign.start,
                         style: GoogleFonts.inter(
                             textStyle: configProvider.isDark()
@@ -118,7 +121,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                         configProvider.selectTime(context);
                       },
                       child: Text(
-                        'Select time',
+                        AppLocalizations.of(context)!.selectTime,
                         textAlign: TextAlign.start,
                         style: GoogleFonts.inter(
                             textStyle: configProvider.isDark()
@@ -145,15 +148,20 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                             .copyWith(color: const Color(0xffA9A9A9)),
                       ),
                     ),
-                    Text(
-                      textAlign: TextAlign.center,
-                      configProvider.selectedTime,
-                      style: GoogleFonts.inter(
-                        textStyle: Theme.of(context)
-                            .textTheme
-                            .titleSmall!
-                            .copyWith(color: const Color(0xffA9A9A9)),
-                      ),
+                    Consumer<ConfigProvider>(
+                      
+                      builder: (context, state,_) {
+                        return Text(
+                          textAlign: TextAlign.center,
+                          configProvider.selectedTime,
+                          style: GoogleFonts.inter(
+                            textStyle: Theme.of(context)
+                                .textTheme
+                                .titleSmall!
+                                .copyWith(color: const Color(0xffA9A9A9)),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -162,10 +170,14 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                   style:
                       ElevatedButton.styleFrom(backgroundColor: AppColors.blue),
                   onPressed: () {
-                    configProvider.addTask(context);
+                    configProvider.addTask(
+                        context: context,
+                        formKey: formKey,
+                        titleController: titleController,
+                        descrController: descrController);
                   },
                   child: Text(
-                    'addTask',
+                    AppLocalizations.of(context)!.addTask,
                     style: GoogleFonts.poppins(
                       textStyle: Theme.of(context)
                           .textTheme

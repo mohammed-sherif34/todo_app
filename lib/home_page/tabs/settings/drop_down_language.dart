@@ -17,6 +17,7 @@ class _DropDownLanguageState extends State<DropDownLanguage> {
   @override
   Widget build(BuildContext context) {
     configProvider = Provider.of<ConfigProvider>(context);
+  
     List<String> items = [
       'English',
       'العربية',

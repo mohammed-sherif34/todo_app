@@ -24,6 +24,9 @@ class TodoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ConfigProvider configProvider = Provider.of<ConfigProvider>(context);
+    
+   
+    
     return Consumer<ConfigProvider>(
       builder: (context, state, _) {
         return MaterialApp(

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 //import 'package:todo_app/tabs/settings/drop_down_language.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/home_page/tabs/settings/drop_down_language.dart';
 import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/home_page/tabs/settings/drop_down_theme.dart';
 import 'package:todo_app/utils/app_colors.dart';
@@ -30,7 +31,7 @@ class _SettingsTabState extends State<SettingsTab> {
               height: MediaQuery.of(context).size.height * .13,
               color: AppColors.blue,
             ),
-            /* Padding(
+             Padding(
               padding: EdgeInsetsDirectional.only(
                   bottom: 20,
                   top: 20,
@@ -39,7 +40,7 @@ class _SettingsTabState extends State<SettingsTab> {
                 AppLocalizations.of(context)!.language,
                 //AppLocalizations.of(context)!.language,
                 style: GoogleFonts.poppins(
-                    textStyle: ConfigCubit.isDark()
+                    textStyle: configProvider.isDark()
                         ? Theme.of(context)
                             .textTheme
                             .bodyLarge!
@@ -54,7 +55,7 @@ class _SettingsTabState extends State<SettingsTab> {
               //width: double.infinity,
               height: MediaQuery.of(context).size.height * .05,
               child: const DropDownLanguage(),
-            ),*/
+            ),
             Padding(
               padding: EdgeInsetsDirectional.only(
                   bottom: 20,

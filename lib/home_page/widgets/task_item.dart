@@ -8,12 +8,13 @@ import 'package:todo_app/utils/firebase_utils.dart';
 
 import '../../utils/app_colors.dart';
 
+// ignore: must_be_immutable
 class TaskItem extends StatefulWidget {
-  const TaskItem({
+  TaskItem({
     super.key,
     required this.task,
   });
-  final Task task;
+  late Task task;
 
   @override
   State<TaskItem> createState() => _TaskItemState();
@@ -31,7 +32,11 @@ class _TaskItemState extends State<TaskItem> {
             arguments: widget.task);
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 25),
+        margin: const EdgeInsets.only(
+          bottom: 25,
+          right: 16,
+          left: 16,
+        ),
         child: Slidable(
           startActionPane: ActionPane(
             extentRatio: .25,
@@ -40,7 +45,7 @@ class _TaskItemState extends State<TaskItem> {
               SlidableAction(
                 borderRadius: BorderRadius.circular(20),
                 onPressed: (context) {
-                  FireBaseUtils.deleteTask(widget.task);
+                  FireBaseUtils.deleteTask(widget.task, context);
                   configProvider.gettasksList();
                 },
                 backgroundColor: const Color(0xFFFE4A49),
@@ -61,8 +66,8 @@ class _TaskItemState extends State<TaskItem> {
             child: Row(
               children: [
                 Container(
-                  margin: const EdgeInsets.only(
-                      top: 24, bottom: 24, left: 16, right: 24),
+                  margin: const EdgeInsetsDirectional.only(
+                      top: 24, bottom: 24, start: 16, end: 24),
                   color: widget.task.isDone ? AppColors.green : AppColors.blue,
                   width: 5,
                   height: MediaQuery.of(context).size.height * .08,
@@ -80,7 +85,7 @@ class _TaskItemState extends State<TaskItem> {
                           ),
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * .6,
+                      width: MediaQuery.of(context).size.width * .5,
                       child: Padding(
                         padding: const EdgeInsetsDirectional.only(start: 8.0),
                         child: Text(
@@ -103,7 +108,7 @@ class _TaskItemState extends State<TaskItem> {
                 Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
+                      padding: const EdgeInsetsDirectional.only(end: 16.0),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: widget.task.isDone
@@ -112,16 +117,18 @@ class _TaskItemState extends State<TaskItem> {
                         ),
                         onPressed: () {
                           if (!widget.task.isDone) {
+                            widget.task = Task(
+                                time: widget.task.time,
+                                id: widget.task.id,
+                                title: widget.task.title,
+                                description: widget.task.description,
+                                date: widget.task.date,
+                                isDone: true);
                             FireBaseUtils.updateTask(
-                                task: widget.task,
-                                updatedData: Task(
-                                        time: widget.task.time,
-                                        id: widget.task.id,
-                                        title: widget.task.title,
-                                        description: widget.task.description,
-                                        date: widget.task.date,
-                                        isDone: true)
-                                    .toJson());
+                              configProvider: configProvider,
+                              context: context,
+                              task: widget.task,
+                            );
                           }
                           configProvider.gettasksList();
                         },
@@ -133,9 +140,16 @@ class _TaskItemState extends State<TaskItem> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0, right: 16),
-                      child: Text(widget.task.time,
-                          style: Theme.of(context).textTheme.bodySmall,
+                      padding:
+                          const EdgeInsetsDirectional.only(top: 8.0, end: 16),
+                      child: Text(configProvider.selectedTime,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall!
+                              .copyWith(
+                                  color: configProvider.isDark()
+                                      ? AppColors.gray
+                                      : AppColors.black),
                           textAlign: TextAlign.end),
                     )
                   ],

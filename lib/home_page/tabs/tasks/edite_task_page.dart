@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/utils/firebase_utils.dart';
+import 'package:todo_app/utils/snackbar_utils.dart';
 import '../../../utils/app_colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EditeTaskPage extends StatefulWidget {
   const EditeTaskPage({super.key});
@@ -19,6 +21,15 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
   late Task task;
   TextEditingController editingTilteController = TextEditingController();
   TextEditingController editingDescController = TextEditingController();
+  final GlobalKey<FormState> editeFormKey = GlobalKey<FormState>();
+  @override
+  /*
+  void dispose() {
+    editingDescController.dispose();
+    editingTilteController.dispose();
+    super.dispose();
+  }
+*/
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((duration) {
@@ -50,7 +61,7 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
         title: Padding(
           padding: const EdgeInsets.only(left: 24),
           child: Text(
-            'To Do List',
+            AppLocalizations.of(context)!.toDoList,
             style: GoogleFonts.poppins(
               textStyle: Theme.of(context).textTheme.titleLarge,
             ),
@@ -58,35 +69,35 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Form(
-          key: configProvider.editeFormKey,
-          child: Column(
-            children: [
-              Stack(
-                alignment: AlignmentDirectional.topCenter,
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * .06,
-                    color: AppColors.blue,
+        child: Column(
+          children: [
+            Stack(
+              alignment: AlignmentDirectional.topCenter,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * .06,
+                  color: AppColors.blue,
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * .9,
+                  height: MediaQuery.of(context).size.height * .6,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: configProvider.isDark()
+                        ? AppColors.darkGray
+                        : const Color.fromARGB(241, 255, 255, 255),
                   ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * .9,
-                    height: MediaQuery.of(context).size.height * .6,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: configProvider.isDark()
-                          ? AppColors.darkGray
-                          : const Color.fromARGB(241, 255, 255, 255),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Form(
+                      key: editeFormKey,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
                             textAlign: TextAlign.center,
-                            'Edite Task',
+                            AppLocalizations.of(context)!.editeTask,
                             style: GoogleFonts.poppins(
                               textStyle: Theme.of(context)
                                   .textTheme
@@ -106,7 +117,8 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
                             controller: editingTilteController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'title can not be empty';
+                                return AppLocalizations.of(context)!
+                                    .titleCanNotbeEmpty;
                               }
                               return null;
                             },
@@ -121,14 +133,15 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
                             ),
                           ),
                           TextFormField(
-                             style: TextStyle(
+                            style: TextStyle(
                                 color: configProvider.isDark()
                                     ? AppColors.gray
                                     : AppColors.black),
                             controller: editingDescController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'description can not be empty';
+                                return AppLocalizations.of(context)!
+                                    .descCanNotbeEmpty;
                               }
                               return null;
                             },
@@ -151,7 +164,7 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
                                   configProvider.showCalender(context);
                                 },
                                 child: Text(
-                                  'Select date ',
+                                  AppLocalizations.of(context)!.selectdate,
                                   textAlign: TextAlign.start,
                                   style: GoogleFonts.inter(
                                       textStyle: configProvider.isDark()
@@ -169,7 +182,7 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
                                   configProvider.selectTime(context);
                                 },
                                 child: Text(
-                                  'Select time',
+                                  AppLocalizations.of(context)!.selectTime,
                                   textAlign: TextAlign.start,
                                   style: GoogleFonts.inter(
                                       textStyle: configProvider.isDark()
@@ -214,24 +227,30 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.blue),
-                            onPressed: () {
-                              configProvider.editeFormKey.currentState
-                                  ?.validate();
-                              FireBaseUtils.updateTask(
+                            onPressed: () async {
+                              if (editeFormKey.currentState!.validate()) {
+                                task = Task(
+                                    time: task.time,
+                                    id: task.id,
+                                    title: editingTilteController.text,
+                                    description: editingDescController.text,
+                                    date: configProvider.selectDate);
+                                String msg = await FireBaseUtils.updateTask(
+                                  configProvider: configProvider,
+                                  context: context,
                                   task: task,
-                                  updatedData: Task(
-                                          time: task.time,
-                                          id: task.id,
-                                          title: editingTilteController.text,
-                                          description:
-                                              editingDescController.text,
-                                          date: configProvider.selectDate)
-                                      .toJson());
-                              configProvider.gettasksList();
-                              Navigator.pop(context);
+                                );
+                                SnackBarUtils.showSnackBar(
+                                    // ignore: use_build_context_synchronously
+                                    context: context,
+                                    text: msg,
+                                    configProvider: configProvider);
+                                // ignore: use_build_context_synchronously
+                                Navigator.pop(context);
+                              }
                             },
                             child: Text(
-                              'Save Changes',
+                              AppLocalizations.of(context)!.saveChanges,
                               style: GoogleFonts.poppins(
                                 textStyle: Theme.of(context)
                                     .textTheme
@@ -244,10 +263,10 @@ class _EditeTaskPageState extends State<EditeTaskPage> {
                       ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

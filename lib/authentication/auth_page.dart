@@ -5,6 +5,7 @@ import 'package:todo_app/authentication/login/login_form.dart';
 import 'package:todo_app/authentication/register/register_form.dart';
 import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/utils/app_colors.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -37,7 +38,7 @@ class _AuthPageState extends State<AuthPage> {
         title: Padding(
           padding: const EdgeInsets.only(left: 24),
           child: Text(
-            'To Do List',
+            AppLocalizations.of(context)!.toDoList,
             style: GoogleFonts.poppins(
               textStyle: Theme.of(context).textTheme.titleLarge,
             ),

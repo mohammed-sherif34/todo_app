@@ -5,23 +5,25 @@ import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/utils/app_colors.dart';
 
 class CustomAuthTextFiled extends StatefulWidget {
-  const CustomAuthTextFiled({
+   const CustomAuthTextFiled({
     super.key,
     required this.labelText,
     this.validator,
     this.controller,
+    this.obscureText=false,
   });
 
   final String labelText;
   final String? Function(String?)? validator;
   final TextEditingController? controller;
+   final bool obscureText ;
+
   @override
   State<CustomAuthTextFiled> createState() => _CustomAuthTextFiledState();
 }
 
 class _CustomAuthTextFiledState extends State<CustomAuthTextFiled> {
   late ConfigProvider configProvider;
-  bool enabled = false;
   @override
   Widget build(BuildContext context) {
     configProvider = Provider.of<ConfigProvider>(context);
@@ -29,7 +31,7 @@ class _CustomAuthTextFiledState extends State<CustomAuthTextFiled> {
       padding: const EdgeInsets.only(top: 16.0),
       child: TextFormField(
         //enabled: enabled,
-
+        obscureText: widget.obscureText,
         //enabled: false,
         controller: widget.controller,
         style: TextStyle(

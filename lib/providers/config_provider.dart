@@ -2,31 +2,53 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/models/task.dart';
+import 'package:todo_app/models/user.dart';
 import 'package:todo_app/utils/firebase_utils.dart';
+import 'package:todo_app/utils/snackbar_utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ConfigProvider extends ChangeNotifier {
+  bool loading = false;
+
+  bool isLoading() {
+    return loading;
+  }
+
+  void setLoading(bool value) {
+    loading = value;
+    notifyListeners(); // Notify listeners when loading state changes
+  }
+
   String language = 'en';
   ThemeMode themeMode = ThemeMode.light;
-
+  static late MyUser user;
   DateTime selectDate = DateTime.now();
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  TextEditingController titleController = TextEditingController();
-  TextEditingController descrController = TextEditingController();
-  final GlobalKey<FormState> editeFormKey = GlobalKey<FormState>();
-  TextEditingController editeTitleController = TextEditingController();
-  TextEditingController editeDescrController = TextEditingController();
-  DateTime timeLineSelectedDate =
-      DateTime.now(); 
-  List<Task> tasksList = [];
-  String selectedTime = TimeOfDay.now().hour < 12
-      ? '${TimeOfDay.now().hour}:${TimeOfDay.now().minute} am'
-      : '${TimeOfDay.now().hour - 11}:${TimeOfDay.now().minute} pm';
- 
 
- void changeSelectDate(DateTime date) {
-    timeLineSelectedDate = date; 
-    gettasksList(); 
-    notifyListeners(); 
+  DateTime timeLineSelectedDate = DateTime.now();
+  List<Task> tasksList = [];
+  String selectedTime = "";
+
+  Future<void> selectTime(BuildContext context) async {
+    TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+   
+    if (picked != null) {
+      // ignore: use_build_context_synchronously
+      selectedTime = formateTime(picked, context);
+      notifyListeners();
+    }
+  }
+
+  String formateTime(TimeOfDay picked, context) {
+    return picked.format(context);
+  }
+
+  void changeSelectDate(DateTime date) {
+    timeLineSelectedDate = date;
+    gettasksList();
+    notifyListeners();
   }
 
   void gettasksList() async {
@@ -54,13 +76,14 @@ class ConfigProvider extends ChangeNotifier {
     Timestamp endTimestamp = Timestamp.fromDate(endOfDay);
 
     // Query Firestore for tasks between startOfDay and endOfDay
-    QuerySnapshot<Task> querySnapshot = await FireBaseUtils.collectionRef()
-        .where('date', isGreaterThanOrEqualTo: startTimestamp)
-        .where('date', isLessThanOrEqualTo: endTimestamp)
-        .orderBy(
-          'date',
-        )
-        .get();
+    QuerySnapshot<Task> querySnapshot =
+        await FireBaseUtils.tasksCollectionRef(user.id)
+            .where('date', isGreaterThanOrEqualTo: startTimestamp)
+            .where('date', isLessThanOrEqualTo: endTimestamp)
+            .orderBy(
+              'date',
+            )
+            .get();
 
     tasksList = querySnapshot.docs
         .map(
@@ -71,20 +94,28 @@ class ConfigProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addTask(BuildContext context) {
-    formKey.currentState?.validate();
-
-    Task task = Task(
-        time: selectedTime,
-        title: titleController.text,
-        description: descrController.text,
-        date: selectDate);
-    FireBaseUtils.addTask(task)
-        .timeout(const Duration(seconds: 1), onTimeout: () {});
-    gettasksList();
-    Navigator.pop(context);
-    titleController.clear();
-    descrController.clear();
+  void addTask(
+      {required context,
+      required GlobalKey<FormState> formKey,
+      required TextEditingController titleController,
+      required TextEditingController descrController}) {
+    if (formKey.currentState!.validate()) {
+      Task task = Task(
+          time: selectedTime,
+          title: titleController.text,
+          description: descrController.text,
+          date: selectDate);
+      FireBaseUtils.addTask(task)
+          .timeout(const Duration(seconds: 1), onTimeout: () {});
+      SnackBarUtils.showSnackBar(
+          configProvider: ConfigProvider(),
+          context: context,
+          text: AppLocalizations.of(context)!.taskAddedSuccessfuly);
+      gettasksList();
+      Navigator.pop(context);
+      titleController.clear();
+      descrController.clear();
+    }
   }
 
   String formateDate({required DateTime date}) {
@@ -103,24 +134,6 @@ class ConfigProvider extends ChangeNotifier {
     selectDate = chosenDate ?? selectDate;
     //formateDate(date: selectDate);
     notifyListeners();
-  }
-
-  
-  Future<void> selectTime(BuildContext context) async {
-    TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      formateTime(picked);
-      notifyListeners();
-    }
-  }
-
-  String formateTime(TimeOfDay picked) {
-    return picked.hour < 12
-        ? '${picked.hour}:${picked.minute} am'
-        : '${picked.hour - 11}:${picked.minute} pm';
   }
 
   void changeLanguage(String newLanguage) {

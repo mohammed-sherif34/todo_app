@@ -11,6 +11,7 @@ class TasksTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  
     var configProvider = Provider.of<ConfigProvider>(context);
     if (configProvider.tasksList.isEmpty) {
   configProvider.gettasksList();

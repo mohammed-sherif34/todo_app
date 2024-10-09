@@ -5,6 +5,7 @@ import 'package:todo_app/authentication/widgets/custom_auth_text_filed.dart';
 import 'package:todo_app/providers/config_provider.dart';
 import 'package:todo_app/utils/app_colors.dart';
 import 'package:todo_app/utils/firebase_utils.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RegisterForm extends StatefulWidget {
   const RegisterForm({
@@ -19,17 +20,13 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  TextEditingController userNameController = TextEditingController(text: 'mo');
+  TextEditingController userNameController = TextEditingController();
 
-  TextEditingController emailController =
-      TextEditingController(text: 'mohamed@gmail.com');
+  TextEditingController emailController = TextEditingController();
 
-  TextEditingController passwordController =
-      TextEditingController(text: '123456');
+  TextEditingController passwordController = TextEditingController();
 
-  TextEditingController confirmPasswordController = TextEditingController(
-    text: '123456',
-  );
+  TextEditingController confirmPasswordController = TextEditingController();
 
   late ConfigProvider configProvider;
 
@@ -37,7 +34,6 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget build(BuildContext context) {
     configProvider = Provider.of<ConfigProvider>(context);
     return Column(
-      // mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
@@ -62,7 +58,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 children: [
                   Text(
                     //textAlign: TextAlign.center,
-                    'Register',
+                    AppLocalizations.of(context)!.register,
                     style: GoogleFonts.poppins(
                       textStyle: Theme.of(context)
                           .textTheme
@@ -75,56 +71,65 @@ class _RegisterFormState extends State<RegisterForm> {
                     ),
                   ),
                   CustomAuthTextFiled(
-                    labelText: 'User name',
+                    labelText: AppLocalizations.of(context)!.userName,
                     controller: userNameController,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'User name can not be empty';
+                        return AppLocalizations.of(context)!
+                            .userNameCanNotBeEmpty;
                       }
                       return null;
                     },
                   ),
                   CustomAuthTextFiled(
-                    labelText: 'Email',
+                    labelText: AppLocalizations.of(context)!.email,
                     controller: emailController,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Email can not be empty';
+                        return AppLocalizations.of(context)!.emailCanNotbeEmpty;
                       }
                       final bool emailValid = RegExp(
                               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                           .hasMatch(value);
                       if (!emailValid) {
-                        return 'please enter a valid email';
+                        return AppLocalizations.of(context)!
+                            .pleasEentervalidEmail;
                       }
                       return null;
                     },
                   ),
                   CustomAuthTextFiled(
-                    labelText: 'Password',
+                    labelText: AppLocalizations.of(context)!.password,
                     controller: passwordController,
+                    obscureText: true,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'User name can not be empty';
+                        return AppLocalizations.of(context)!
+                            .passwordCanNotBeEmpty;
                       }
                       if (value.length < 6) {
-                        return 'Password can not be less than 6 characters';
+                        return AppLocalizations.of(context)!
+                            .passwordCanNotBelessThan6characters;
                       }
                       return null;
                     },
                   ),
                   CustomAuthTextFiled(
-                    labelText: 'Confirm Password',
+                    labelText: AppLocalizations.of(context)!.confirmPassword,
                     controller: confirmPasswordController,
+                    obscureText: true,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'User name can not be empty';
+                        return AppLocalizations.of(context)!
+                            .confirmPasswordCanNotBeEmpty;
                       }
                       if (value.length < 6) {
-                        return 'Password can not be less than 6 characters';
+                        return AppLocalizations.of(context)!
+                            .passwordCanNotBelessThan6characters;
                       }
                       if (value != passwordController.text) {
-                        return 'Confirm password not match password';
+                        return AppLocalizations.of(context)!
+                            .confirmPasswordNotMatchPassword;
                       }
                       return null;
                     },
@@ -134,27 +139,43 @@ class _RegisterFormState extends State<RegisterForm> {
                         backgroundColor: AppColors.blue),
                     onPressed: () {
                       FireBaseUtils.register(
+                          userNameController: userNameController,
+                          configProvider: configProvider,
                           formKey: formKey,
                           emailController: emailController,
-                          passwordController: passwordController);
+                          passwordController: passwordController,
+                          context: context);
                     },
-                    child: Text(
-                      'Register',
-                      style: GoogleFonts.poppins(
-                        textStyle: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(color: AppColors.white),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Consumer<ConfigProvider>(
+                        builder: (context, configProvider, _) {
+                          return configProvider.isLoading()
+                              ? Center(
+                                  child: CircularProgressIndicator(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                )
+                              : Text(
+                                  AppLocalizations.of(context)!.register,
+                                  style: GoogleFonts.poppins(
+                                    textStyle: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(color: AppColors.white),
+                                  ),
+                                );
+                        },
                       ),
                     ),
                   ),
                   Row(
                     children: [
-                      const Text('Already have an account ?'),
+                      Text(AppLocalizations.of(context)!.alreadyHaveAnAccount),
                       TextButton(
                         onPressed: widget.onPressed,
                         child: Text(
-                          'Login',
+                          AppLocalizations.of(context)!.login,
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                       )
