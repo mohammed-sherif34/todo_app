@@ -27,6 +27,7 @@ lib/
 │   ├── date_time_helpers.dart      # Date and time formatting utilities
 │   └── images.dart                 # Image asset management
 └── main.dart                       # Entry point of the application
+```
 📱 Features
 -----------
 
@@ -68,14 +69,7 @@ Localization setup is managed in the l10n/ folder. To add a new language:
 3.  Update app\_localizations.dart for the new language.
     
 
-🖌 Theming
 
-Themes and colors are managed in the utils/ folder:
-
-*   app\_colors.dart: Defines the color palette.
-    
-*   app\_theme.dart: Configures light and dark themes.
-    
 
 🖌 Theming
 
