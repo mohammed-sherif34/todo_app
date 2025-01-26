@@ -132,3 +132,12 @@ Key dependencies used in this project:
 *   cloud\_firestore: For Firestore database operations.
     
 *   flutter\_localizations: For localization support.
+
+
+## video  📸
+
+
+
+https://github.com/user-attachments/assets/c4d801e9-871e-4603-ad4a-85b5bc31b32b
+
+
