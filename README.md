@@ -140,4 +140,9 @@ Key dependencies used in this project:
 
 https://github.com/user-attachments/assets/c4d801e9-871e-4603-ad4a-85b5bc31b32b
 
+## edite page video  📸
+
+
+https://github.com/user-attachments/assets/5ceedd1f-30fe-4399-969d-21ec36d6cf27
+
 
